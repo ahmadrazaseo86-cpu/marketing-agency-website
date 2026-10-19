@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --wp-dark: #1d2327;
+  --wp-darker: #131619;
+  --wp-blue: #2271b1;
+  --wp-blue-hover: #135e96;
+  --wp-bg: #f0f0f1;
+  --wp-border: #c3c4c7;
+  --wp-text: #2c3338;
+}
+
+body {
+  background-color: var(--wp-bg);
+  color: var(--wp-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* WordPress classic button */
+.button-primary {
+  background-color: #2271b1;
+  border-color: #2271b1;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 2.15384615;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.button-primary:hover {
+  background-color: #135e96;
+  border-color: #135e96;
+  color: #fff;
+}
+
+.button-secondary {
+  color: #2271b1;
+  border-color: #2271b1;
+  background: #f6f7f7;
+  vertical-align: top;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 2.15384615;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.button-secondary:hover {
+  background: #f0f0f1;
+  border-color: #0a4b78;
+  color: #0a4b78;
+}
+
+/* WordPress Postbox / Card */
+.postbox {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+  padding: 0;
+  line-height: 1;
+}
+
+.postbox-header {
+  border-bottom: 1px solid #c3c4c7;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #1d2327;
+}
+
+.postbox-content {
+  padding: 16px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+/* WordPress Tables */
+.wp-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  font-size: 13px;
+}
+
+.wp-list-table th {
+  background: #f6f7f7;
+  border-bottom: 1px solid #c3c4c7;
+  color: #2c3338;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.wp-list-table td {
+  padding: 10px;
+  border-top: 1px solid #c3c4c7;
+  vertical-align: top;
+}
+
+.wp-list-table tr:hover {
+  background-color: #f6f7f7;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

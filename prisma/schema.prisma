@@ -1,0 +1,197 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  username     String        @unique
+  email        String        @unique
+  passwordHash String
+  displayName  String
+  firstName    String?
+  lastName     String?
+  role         String        @default("ADMINISTRATOR") // ADMINISTRATOR, EDITOR, AUTHOR, CONTRIBUTOR, SUBSCRIBER
+  avatarUrl    String?
+  bio          String?
+  website      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  posts        Post[]
+  pages        Page[]
+  comments     Comment[]
+  activityLogs ActivityLog[]
+  media        Media[]
+}
+
+model Post {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  content         String
+  excerpt         String?
+  status          String         @default("DRAFT") // PUBLISHED, DRAFT, SCHEDULED, TRASH
+  visibility      String         @default("PUBLIC") // PUBLIC, PRIVATE, PASSWORD
+  password        String?
+  scheduledAt     DateTime?
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  views           Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  authorId        String
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categories      Category[]
+  tags            Tag[]
+  comments        Comment[]
+  revisions       PostRevision[]
+}
+
+model PostRevision {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  excerpt   String?
+  createdAt DateTime @default(now())
+}
+
+model Page {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  content         String
+  status          String         @default("DRAFT") // PUBLISHED, DRAFT, TRASH
+  template        String         @default("default") // default, full-width, landing
+  order           Int            @default(0)
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  parentId        String?
+  parent          Page?          @relation("PageHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children        Page[]         @relation("PageHierarchy")
+
+  authorId        String
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  posts       Post[]
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  posts       Post[]
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  filename     String
+  url          String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  title        String?
+  altText      String?
+  caption      String?
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+}
+
+model Comment {
+  id          String        @id @default(cuid())
+  authorName  String
+  authorEmail String
+  authorUrl   String?
+  content     String
+  status      String        @default("PENDING") // APPROVED, PENDING, SPAM, TRASH
+  createdAt   DateTime      @default(now())
+
+  postId      String
+  post        Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  parentId    String?
+  parent      Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[]     @relation("CommentReplies")
+}
+
+model Plugin {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  version     String
+  author      String
+  isActive    Boolean  @default(false)
+  settings    String?  // JSON string
+  createdAt   DateTime @default(now())
+}
+
+model Theme {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  version     String
+  author      String
+  isActive    Boolean  @default(false)
+  previewUrl  String?
+  createdAt   DateTime @default(now())
+}
+
+model Menu {
+  id        String   @id @default(cuid())
+  name      String
+  location  String?  // header, footer, etc.
+  items     String   // JSON string of menu items hierarchy
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Option {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   // text or JSON string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // e.g. "created_post", "deleted_user", "updated_settings"
+  entityType String   // post, page, media, user, setting
+  entityId   String?
+  details    String?
+  createdAt  DateTime @default(now())
+}
