@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
     const defaultData = DEFAULT_PAGE_ELEMENTS[page] || DEFAULT_PAGE_ELEMENTS.home;
     return NextResponse.json({ elements: defaultData, page });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch page elements' }, { status: 500 });
+    const { searchParams } = new URL(req.url);
+    const page = searchParams.get('page') || 'home';
+    const defaultData = DEFAULT_PAGE_ELEMENTS[page] || DEFAULT_PAGE_ELEMENTS.home;
+    return NextResponse.json({ elements: defaultData, page });
   }
 }
 

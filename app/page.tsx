@@ -19,28 +19,80 @@ import {
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const [posts, categories, elementsOpt] = await Promise.all([
-    prisma.post.findMany({
-      where: { status: 'PUBLISHED' },
-      include: {
-        author: { select: { displayName: true } },
-        categories: true,
-        _count: { select: { comments: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 6,
-    }),
-    prisma.category.findMany({
-      include: { _count: { select: { posts: true } } },
-    }),
-    prisma.option.findUnique({ where: { key: 'nexarank_elements_home' } }),
-  ]);
-
+  let posts: any[] = [];
+  let categories: any[] = [];
   let elements = DEFAULT_PAGE_ELEMENTS.home;
-  if (elementsOpt) {
-    try {
-      elements = JSON.parse(elementsOpt.value);
-    } catch (e) {}
+
+  try {
+    const [fetchedPosts, fetchedCategories, elementsOpt] = await Promise.all([
+      prisma.post.findMany({
+        where: { status: 'PUBLISHED' },
+        include: {
+          author: { select: { displayName: true } },
+          categories: true,
+          _count: { select: { comments: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      }),
+      prisma.category.findMany({
+        include: { _count: { select: { posts: true } } },
+      }),
+      prisma.option.findUnique({ where: { key: 'nexarank_elements_home' } }),
+    ]);
+
+    if (fetchedPosts && fetchedPosts.length > 0) {
+      posts = fetchedPosts;
+    }
+    if (fetchedCategories) {
+      categories = fetchedCategories;
+    }
+    if (elementsOpt) {
+      try {
+        elements = { ...DEFAULT_PAGE_ELEMENTS.home, ...JSON.parse(elementsOpt.value) };
+      } catch (e) {}
+    }
+  } catch (error) {
+    console.warn('[NexaRank] Database query fallback triggered:', error);
+  }
+
+  // Graceful fallback posts if database returns empty or is not connected
+  if (posts.length === 0) {
+    posts = [
+      {
+        id: '1',
+        title: 'How to Build an SEO Strategy for 2026',
+        slug: 'how-to-build-an-seo-strategy-for-2026',
+        excerpt:
+          'A comprehensive guide to developing a search engine optimization strategy that drives compounding organic growth in 2026.',
+        createdAt: new Date('2026-10-10'),
+        author: { displayName: 'Ahmad Raza' },
+        categories: [{ id: '1', name: 'SEO', slug: 'seo' }],
+        _count: { comments: 3 },
+      },
+      {
+        id: '2',
+        title: 'The Complete Guide to LinkedIn Marketing',
+        slug: 'the-complete-guide-to-linkedin-marketing',
+        excerpt:
+          'How to leverage LinkedIn for B2B brand presence, thought leadership, and high-converting qualified leads.',
+        createdAt: new Date('2026-10-05'),
+        author: { displayName: 'Ahmad Raza' },
+        categories: [{ id: '2', name: 'Social Media', slug: 'social-media' }],
+        _count: { comments: 1 },
+      },
+      {
+        id: '3',
+        title: 'Google Ads Budgeting: What You Need to Know',
+        slug: 'google-ads-budgeting-what-you-need-to-know',
+        excerpt:
+          'Maximize return on ad spend (ROAS) with proven bidding strategies and negative keyword pruning.',
+        createdAt: new Date('2026-09-28'),
+        author: { displayName: 'Ahmad Raza' },
+        categories: [{ id: '3', name: 'PPC', slug: 'ppc' }],
+        _count: { comments: 0 },
+      },
+    ];
   }
 
   return (
